@@ -100,26 +100,34 @@ void GameEngine::initLevel()
 // ─────────────────────────────────────────────
 void GameEngine::spawnPowerUps()
 {
-    const auto& grid = m_mazeGen->grid();
-    int spawned = 0;
-    int attempts = 0;
-    const int target = 8;
+    // Never grow beyond the fixed cap
+    if (m_powerUps.size() >= MAX_POWERUPS) return;
 
-    while (spawned < target && attempts < 500) {
+    const auto& grid = m_mazeGen->grid();
+    int needed   = MAX_POWERUPS - m_powerUps.size();
+    int attempts = 0;
+
+    // Track already-occupied positions to avoid duplicates
+    QSet<QPair<int,int>> occupied;
+    for (const PowerUp& p : m_powerUps)
+        occupied.insert({p.position().x(), p.position().y()});
+
+    while (needed > 0 && attempts < 400) {
         ++attempts;
         int x = QRandomGenerator::global()->bounded(1, COLS - 1);
         int y = QRandomGenerator::global()->bounded(1, ROWS - 1);
 
-        // Only place on open cells, not on goal or snake starts
-        if (grid[y][x] != 0) continue;
-        if (QPoint(x, y) == m_goalPos)   continue;
-        if (QPoint(x, y) == QPoint(1, 1))          continue;
-        if (QPoint(x, y) == QPoint(COLS-2, ROWS-2)) continue;
+        if (grid[y][x] != 0)                         continue;
+        if (QPoint(x, y) == m_goalPos)                continue;
+        if (QPoint(x, y) == QPoint(1, 1))             continue;
+        if (QPoint(x, y) == QPoint(COLS-2, ROWS-2))   continue;
+        if (occupied.contains({x, y}))                continue;
 
         PowerUp::Type t = static_cast<PowerUp::Type>(
             QRandomGenerator::global()->bounded(0, 3));
         m_powerUps.append(PowerUp(QPoint(x, y), t));
-        ++spawned;
+        occupied.insert({x, y});
+        --needed;
     }
 }
 

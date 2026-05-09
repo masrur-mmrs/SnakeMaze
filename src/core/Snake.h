@@ -51,6 +51,7 @@ signals:
 
 private:
     bool isOppositeDirection(Direction a, Direction b) const;
+    bool isBlockedAhead(const QVector<QVector<int>>& grid, int cols, int rows) const;
 
     QVector<QPoint> m_body;
     Direction       m_direction        = Direction::Right;

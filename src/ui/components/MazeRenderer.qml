@@ -165,11 +165,13 @@ Item {
 
             ctx.clearRect(0, 0, width, height)
 
-            drawSnake(ctx, root.gameState.playerBody, "#44E5A0", "#2AC87A", cs, true)
-            drawSnake(ctx, root.gameState.cpuBody,    "#FF5E78", "#CC2244", cs, false)
+            var pAngle = root.gameState ? (root.gameState.playerDirAngle || 90)  : 90
+            var cAngle = root.gameState ? (root.gameState.cpuDirAngle    || 270) : 270
+            drawSnake(ctx, root.gameState.playerBody, "#44E5A0", "#2AC87A", cs, true,  pAngle)
+            drawSnake(ctx, root.gameState.cpuBody,    "#FF5E78", "#CC2244", cs, false, cAngle)
         }
 
-        function drawSnake(ctx, body, headColor, bodyColor, cs, isPlayer) {
+        function drawSnake(ctx, body, headColor, bodyColor, cs, isPlayer, dirAngle) {
             if (!body || body.length === 0) return
 
             var radius = cs * 0.38
@@ -183,22 +185,68 @@ Item {
                 var t = i / (body.length - 1)   // 0 = head, 1 = tail
 
                 if (i === 0) {
-                    // Head: larger, glowing circle
+                    // Glow behind head
                     var grd = ctx.createRadialGradient(cx, cy, 1, cx, cy, cs * 0.55)
-                    grd.addColorStop(0,   headColor + "55")
-                    grd.addColorStop(1,   headColor + "00")
+                    grd.addColorStop(0, headColor + "55")
+                    grd.addColorStop(1, headColor + "00")
                     ctx.fillStyle = grd
                     ctx.beginPath()
                     ctx.arc(cx, cy, cs * 0.55, 0, Math.PI * 2)
                     ctx.fill()
 
+                    // Rotate around head center to face movement direction
+                    ctx.save()
+                    ctx.translate(cx, cy)
+                    ctx.rotate((dirAngle || 90) * Math.PI / 180)
+
+                    // Head circle
                     ctx.fillStyle = headColor
                     ctx.beginPath()
-                    ctx.arc(cx, cy, radius * 1.15, 0, Math.PI * 2)
+                    ctx.arc(0, 0, radius * 1.15, 0, Math.PI * 2)
+                    ctx.fill()
+
+                    // Snout bump — points "up" in local space = forward
+                    ctx.fillStyle = headColor
+                    ctx.beginPath()
+                    ctx.ellipse(0, -(radius * 1.05), radius * 0.50, radius * 0.38, 0, 0, Math.PI * 2)
                     ctx.fill()
 
                     // Eyes
-                    drawEyes(ctx, body, i, cx, cy, cs, isPlayer)
+                    var er   = cs * 0.10
+                    var eyeY = -(radius * 0.32)
+                    ctx.fillStyle = "#FFFFFF"
+                    ctx.beginPath()
+                    ctx.arc(-radius * 0.38, eyeY, er, 0, Math.PI * 2)
+                    ctx.fill()
+                    ctx.beginPath()
+                    ctx.arc( radius * 0.38, eyeY, er, 0, Math.PI * 2)
+                    ctx.fill()
+                    ctx.fillStyle = isPlayer ? "#0D2A1A" : "#2A0010"
+                    ctx.beginPath()
+                    ctx.arc(-radius * 0.38, eyeY - er * 0.3, er * 0.55, 0, Math.PI * 2)
+                    ctx.fill()
+                    ctx.beginPath()
+                    ctx.arc( radius * 0.38, eyeY - er * 0.3, er * 0.55, 0, Math.PI * 2)
+                    ctx.fill()
+
+                    // Forked tongue
+                    ctx.strokeStyle = isPlayer ? "#FF6B9D" : "#FF3355"
+                    ctx.lineWidth   = 1.5
+                    ctx.lineCap     = "round"
+                    ctx.beginPath()
+                    ctx.moveTo(0, -(radius * 1.45))
+                    ctx.lineTo(0, -(radius * 1.80))
+                    ctx.stroke()
+                    ctx.beginPath()
+                    ctx.moveTo(0, -(radius * 1.80))
+                    ctx.lineTo(-3, -(radius * 2.05))
+                    ctx.stroke()
+                    ctx.beginPath()
+                    ctx.moveTo(0, -(radius * 1.80))
+                    ctx.lineTo( 3, -(radius * 2.05))
+                    ctx.stroke()
+
+                    ctx.restore()
 
                 } else {
                     // Body: fades toward tail
@@ -226,41 +274,6 @@ Item {
                     ctx.globalAlpha = 1
                 }
             }
-        }
-
-        function drawEyes(ctx, body, i, cx, cy, cs, isPlayer) {
-            // Determine direction for eye placement
-            var dx = 0, dy = 0
-            if (body.length > 1) {
-                dx = body[0].x - body[1].x
-                dy = body[0].y - body[1].y
-            }
-
-            var perpX = -dy, perpY = dx
-            var eyeOffset = cs * 0.14
-            var fwdOffset  = cs * 0.10
-
-            var ex1 = cx + perpX * eyeOffset + dx * fwdOffset
-            var ey1 = cy + perpY * eyeOffset + dy * fwdOffset
-            var ex2 = cx - perpX * eyeOffset + dx * fwdOffset
-            var ey2 = cy - perpY * eyeOffset + dy * fwdOffset
-            var er  = cs * 0.10
-
-            ctx.fillStyle = "#FFFFFF"
-            ctx.beginPath()
-            ctx.arc(ex1, ey1, er, 0, Math.PI * 2)
-            ctx.fill()
-            ctx.beginPath()
-            ctx.arc(ex2, ey2, er, 0, Math.PI * 2)
-            ctx.fill()
-
-            ctx.fillStyle = isPlayer ? "#0D2A1A" : "#2A0010"
-            ctx.beginPath()
-            ctx.arc(ex1 + dx*er*0.4, ey1 + dy*er*0.4, er*0.55, 0, Math.PI * 2)
-            ctx.fill()
-            ctx.beginPath()
-            ctx.arc(ex2 + dx*er*0.4, ey2 + dy*er*0.4, er*0.55, 0, Math.PI * 2)
-            ctx.fill()
         }
     }
 

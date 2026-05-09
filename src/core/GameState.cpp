@@ -74,3 +74,27 @@ void GameState::resetScores()
     m_cpuScore    = 0;
     emit scoreChanged();
 }
+
+int GameState::playerDirAngle() const
+{
+    if (!m_playerSnake) return 90;
+    switch (m_playerSnake->direction()) {
+    case Snake::Direction::Up:    return 0;
+    case Snake::Direction::Right: return 90;
+    case Snake::Direction::Down:  return 180;
+    case Snake::Direction::Left:  return 270;
+    }
+    return 90;
+}
+
+int GameState::cpuDirAngle() const
+{
+    if (!m_cpuSnake) return 270;
+    switch (m_cpuSnake->direction()) {
+    case Snake::Direction::Up:    return 0;
+    case Snake::Direction::Right: return 90;
+    case Snake::Direction::Down:  return 180;
+    case Snake::Direction::Left:  return 270;
+    }
+    return 270;
+}

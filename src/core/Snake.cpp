@@ -33,14 +33,35 @@ void Snake::reset(const QPoint& startPos, Direction startDir)
     emit scoreChanged();
 }
 
+bool Snake::isBlockedAhead(const QVector<QVector<int>>& grid, int cols, int rows) const
+{
+    if (m_body.isEmpty()) return true;
+    QPoint head = m_body.first();
+    QPoint delta;
+    switch (m_direction) {
+    case Direction::Up:    delta = { 0, -1}; break;
+    case Direction::Right: delta = { 1,  0}; break;
+    case Direction::Down:  delta = { 0,  1}; break;
+    case Direction::Left:  delta = {-1,  0}; break;
+    }
+    QPoint next = head + delta;
+    if (next.x() < 0 || next.x() >= cols || next.y() < 0 || next.y() >= rows)
+        return true;
+    return grid[next.y()][next.x()] == 1;
+}
+
 // ─────────────────────────────────────────────
 void Snake::move(const QVector<QVector<int>>& grid, int cols, int rows)
 {
     if (!m_alive) return;
 
     // Apply desired direction (ignore 180° reversal)
-    if (!isOppositeDirection(m_direction, m_desiredDirection))
+    if (!isOppositeDirection(m_direction, m_desiredDirection)){
         m_direction = m_desiredDirection;
+    } else if (isBlockedAhead(grid, cols, rows)) {
+        // Allow U-turn only when wall is straight ahead — dead end escape
+        m_direction = m_desiredDirection;
+    }
 
     QPoint delta;
     switch (m_direction) {

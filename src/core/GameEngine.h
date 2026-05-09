@@ -40,6 +40,7 @@ public:
     static constexpr int COLS      = 21;   // must be odd for recursive-division maze
     static constexpr int ROWS      = 21;
     static constexpr int CELL_SIZE = 32;   // pixels (used by QML renderers)
+    static constexpr int MAX_POWERUPS = 6;
 
 public slots:
     // Called from QML
@@ -83,6 +84,7 @@ private:
     int    m_tickRateMs = 150;
     bool   m_paused     = false;
     int    m_difficulty = 0;
+    int    m_totalPowerUpsSpawned = 0;
 
     // Goal position (maze center)
     QPoint m_goalPos { COLS / 2, ROWS / 2 };

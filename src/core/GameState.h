@@ -23,6 +23,8 @@ class GameState : public QObject
     Q_PROPERTY(int          cpuScore    READ cpuScore    NOTIFY scoreChanged)
     Q_PROPERTY(int          goalX       READ goalX       CONSTANT)
     Q_PROPERTY(int          goalY       READ goalY       CONSTANT)
+    Q_PROPERTY(int playerDirAngle READ playerDirAngle NOTIFY bodyChanged)
+    Q_PROPERTY(int cpuDirAngle    READ cpuDirAngle    NOTIFY bodyChanged)
 
 public:
     explicit GameState(QObject* parent = nullptr);
@@ -36,6 +38,8 @@ public:
     int          cpuScore()    const { return m_cpuScore;    }
     int          goalX()       const { return 10; }  // COLS/2
     int          goalY()       const { return 10; }  // ROWS/2
+    int playerDirAngle() const;
+    int cpuDirAngle()    const;
 
     // ── Setters (called by GameEngine) ──────────
     void setMaze(const QVector<QVector<int>>& grid);
