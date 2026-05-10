@@ -165,8 +165,8 @@ Item {
 
             ctx.clearRect(0, 0, width, height)
 
-            var pAngle = root.gameState ? (root.gameState.playerDirAngle || 90)  : 90
-            var cAngle = root.gameState ? (root.gameState.cpuDirAngle    || 270) : 270
+            var pAngle = root.gameState ? (root.gameState.playerDirAngle || 0) : 0
+            var cAngle = root.gameState ? (root.gameState.cpuDirAngle    || 0) : 0
             drawSnake(ctx, root.gameState.playerBody, "#44E5A0", "#2AC87A", cs, true,  pAngle)
             drawSnake(ctx, root.gameState.cpuBody,    "#FF5E78", "#CC2244", cs, false, cAngle)
         }
@@ -194,10 +194,10 @@ Item {
                     ctx.arc(cx, cy, cs * 0.55, 0, Math.PI * 2)
                     ctx.fill()
 
-                    // Rotate around head center to face movement direction
+                    // Save and rotate — 0° = Up, 90° = Right, 180° = Down, 270° = Left
                     ctx.save()
                     ctx.translate(cx, cy)
-                    ctx.rotate((dirAngle || 90) * Math.PI / 180)
+                    ctx.rotate(dirAngle * Math.PI / 180)
 
                     // Head circle
                     ctx.fillStyle = headColor
@@ -205,7 +205,7 @@ Item {
                     ctx.arc(0, 0, radius * 1.15, 0, Math.PI * 2)
                     ctx.fill()
 
-                    // Snout bump — points "up" in local space = forward
+                    // Snout (forward = negative Y in local space after rotation)
                     ctx.fillStyle = headColor
                     ctx.beginPath()
                     ctx.ellipse(0, -(radius * 1.05), radius * 0.50, radius * 0.38, 0, 0, Math.PI * 2)
@@ -229,7 +229,7 @@ Item {
                     ctx.arc( radius * 0.38, eyeY - er * 0.3, er * 0.55, 0, Math.PI * 2)
                     ctx.fill()
 
-                    // Forked tongue
+                    // Tongue
                     ctx.strokeStyle = isPlayer ? "#FF6B9D" : "#FF3355"
                     ctx.lineWidth   = 1.5
                     ctx.lineCap     = "round"

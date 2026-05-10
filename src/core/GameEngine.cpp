@@ -76,6 +76,7 @@ void GameEngine::initLevel()
     // Generate fresh maze
     m_mazeGen->generate();
     m_state->setMaze(m_mazeGen->grid());
+    m_goalPos = m_mazeGen->goalPos();
 
     // Place player snake at top-left open cell
     m_playerSnake->reset(QPoint(1, 1), Snake::Direction::Right);
@@ -205,20 +206,30 @@ void GameEngine::checkGoal()
     bool cpuAtGoal    = (m_cpuSnake->head()    == m_goalPos);
 
     if (playerAtGoal || cpuAtGoal) {
-        m_tickTimer.stop();
+            // Use the actual goal position from the maze generator,
+            // not the approximated COLS/2 integer division.
+            QPoint goal = m_mazeGen->goalPos();
 
-        int ps = m_state->playerScore();
-        int cs = m_state->cpuScore();
+            bool playerAtGoal = (m_playerSnake->head() == goal);
+            bool cpuAtGoal    = (m_cpuSnake->head()    == goal);
 
-        bool playerWon;
-        if (playerAtGoal && cpuAtGoal) {
-            playerWon = (ps >= cs);   // tie goes to player
-        } else if (playerAtGoal) {
-            playerWon = true;
-        } else {
-            playerWon = false;
-        }
+            if (!playerAtGoal && !cpuAtGoal) return;
 
-        emit gameOver(playerWon, ps, cs);
+            // Stop the tick immediately — first arrival ends the game
+            m_tickTimer.stop();
+
+            int  ps = m_state->playerScore();
+            int  cs = m_state->cpuScore();
+            bool playerWon;
+
+            if (playerAtGoal && cpuAtGoal) {
+                playerWon = (ps >= cs);   // simultaneous arrival: higher score wins
+            } else if (playerAtGoal) {
+                playerWon = true;
+            } else {
+                playerWon = false;
+            }
+
+            emit gameOver(playerWon, ps, cs);
     }
 }
