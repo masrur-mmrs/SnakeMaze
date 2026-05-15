@@ -184,27 +184,27 @@ void GameEngine::checkGoal()
     bool cpuAtGoal    = (m_cpuSnake->head()    == m_goalPos);
 
     if (playerAtGoal || cpuAtGoal) {
-            QPoint goal = m_mazeGen->goalPos();
+        QPoint goal = m_mazeGen->goalPos();
 
-            bool playerAtGoal = (m_playerSnake->head() == goal);
-            bool cpuAtGoal    = (m_cpuSnake->head()    == goal);
+        bool playerAtGoal = (m_playerSnake->head() == goal);
+        bool cpuAtGoal    = (m_cpuSnake->head()    == goal);
 
-            if (!playerAtGoal && !cpuAtGoal) return;
+        if (!playerAtGoal && !cpuAtGoal) return;
 
-            m_tickTimer.stop();
+        m_tickTimer.stop();
 
-            int  ps = m_state->playerScore();
-            int  cs = m_state->cpuScore();
-            bool playerWon;
+        int  ps = m_state->playerScore();
+        int  cs = m_state->cpuScore();
+        bool playerWon;
 
-            if (playerAtGoal && cpuAtGoal) {
-                playerWon = (ps >= cs);
-            } else if (playerAtGoal) {
-                playerWon = true;
-            } else {
-                playerWon = false;
-            }
+        if (playerAtGoal && cpuAtGoal) {
+            playerWon = (ps >= cs);
+        } else if (playerAtGoal) {
+            playerWon = true;
+        } else {
+            playerWon = false;
+        }
 
-            emit gameOver(playerWon, ps, cs);
+        emit gameOver(playerWon, ps, cs);
     }
 }
