@@ -24,26 +24,17 @@ public:
     );
 
 private:
-    void easyUpdate  (Snake* cpu, const QVector<QVector<int>>& grid,
-                      int cols, int rows);
+    void easyUpdate  (Snake* cpu, const QVector<QVector<int>>& grid, int cols, int rows);
 
-    void mediumUpdate(Snake* cpu, const QVector<QVector<int>>& grid,
-                      const QPoint& goal, int cols, int rows);
+    void mediumUpdate(Snake* cpu, const QVector<QVector<int>>& grid, const QPoint& goal, int cols, int rows);
 
-    void hardUpdate  (Snake* cpu, const QVector<QVector<int>>& grid,
-                      const QPoint& goal,
-                      const QVector<PowerUp>& powerUps,
-                      int cols, int rows);
+    void hardUpdate  (Snake* cpu, const QVector<QVector<int>>& grid, const QPoint& goal, const QVector<PowerUp>& powerUps, int cols, int rows);
 
-    void survivalMove(Snake* cpu, const QVector<QVector<int>>& grid,
-                      int cols, int rows);
+    void survivalMove(Snake* cpu, const QVector<QVector<int>>& grid, int cols, int rows);
 
-    static bool isPassable(const QVector<QVector<int>>& grid,
-                            const QPoint& p, int cols, int rows);
+    static bool isPassable(const QVector<QVector<int>>& grid, const QPoint& p, int cols, int rows);
 
-    static bool isPassableWithBody(const QVector<QVector<int>>& grid,
-                                   const QPoint& p, int cols, int rows,
-                                   const QSet<int>& blocked);
+    static bool isPassableWithBody(const QVector<QVector<int>>& grid, const QPoint& p, int cols, int rows, const QSet<int>& blocked);
 
     static int  toDirection(const QPoint& from, const QPoint& to);
     static int  encode(const QPoint& p) { return p.x() * 1000 + p.y(); }

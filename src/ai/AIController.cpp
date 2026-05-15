@@ -31,9 +31,7 @@ void AIController::update(
     }
 }
 
-void AIController::easyUpdate(Snake* cpu,
-                               const QVector<QVector<int>>& grid,
-                               int cols, int rows)
+void AIController::easyUpdate(Snake* cpu, const QVector<QVector<int>>& grid, int cols, int rows)
 {
     QPoint head = cpu->head();
 
@@ -46,9 +44,7 @@ void AIController::easyUpdate(Snake* cpu,
     if (valid.isEmpty()) return;
 
     int cur = static_cast<int>(cpu->direction());
-    bool keepCurrent = valid.contains(cur)
-                    && (m_ticksSinceDirectionChange < 5)
-                    && (QRandomGenerator::global()->bounded(100) < 70);
+    bool keepCurrent = valid.contains(cur) && (m_ticksSinceDirectionChange < 5) && (QRandomGenerator::global()->bounded(100) < 70);
     if (keepCurrent) return;
 
     int chosen = valid[QRandomGenerator::global()->bounded(valid.size())];
@@ -56,10 +52,7 @@ void AIController::easyUpdate(Snake* cpu,
     m_ticksSinceDirectionChange = 0;
 }
 
-void AIController::mediumUpdate(Snake* cpu,
-                                 const QVector<QVector<int>>& grid,
-                                 const QPoint& goal,
-                                 int cols, int rows)
+void AIController::mediumUpdate(Snake* cpu, const QVector<QVector<int>>& grid, const QPoint& goal, int cols, int rows)
 {
     QPoint head = cpu->head();
 
@@ -77,11 +70,7 @@ void AIController::mediumUpdate(Snake* cpu,
         cpu->setDesiredDirection(static_cast<Snake::Direction>(bestDir));
 }
 
-void AIController::hardUpdate(Snake* cpu,
-                               const QVector<QVector<int>>& grid,
-                               const QPoint& goal,
-                               const QVector<PowerUp>& powerUps,
-                               int cols, int rows)
+void AIController::hardUpdate(Snake* cpu, const QVector<QVector<int>>& grid, const QPoint& goal, const QVector<PowerUp>& powerUps, int cols, int rows)
 {
     QPoint head = cpu->head();
     const QVector<QPoint>& body = cpu->body();
@@ -102,9 +91,7 @@ void AIController::hardUpdate(Snake* cpu,
 
         int puManhattan = std::abs(head.x()-ppos.x()) + std::abs(head.y()-ppos.y());
 
-        int detourCost = puManhattan
-                       + std::abs(ppos.x()-goal.x())
-                       + std::abs(ppos.y()-goal.y());
+        int detourCost = puManhattan + std::abs(ppos.x()- goal.x()) + std::abs(ppos.y()-goal.y());
 
         if (puManhattan <= 5 && detourCost < goalManhattan * 1.4) {
             target = ppos;
@@ -140,9 +127,7 @@ void AIController::hardUpdate(Snake* cpu,
     survivalMove(cpu, grid, cols, rows);
 }
 
-void AIController::survivalMove(Snake* cpu,
-                                 const QVector<QVector<int>>& grid,
-                                 int cols, int rows)
+void AIController::survivalMove(Snake* cpu, const QVector<QVector<int>>& grid, int cols, int rows)
 {
     QPoint head = cpu->head();
     const QVector<QPoint>& body = cpu->body();
@@ -175,17 +160,14 @@ void AIController::survivalMove(Snake* cpu,
     }
 }
 
-bool AIController::isPassable(const QVector<QVector<int>>& grid,
-                               const QPoint& p, int cols, int rows)
+bool AIController::isPassable(const QVector<QVector<int>>& grid, const QPoint& p, int cols, int rows)
 {
     if (p.x() < 0 || p.x() >= cols || p.y() < 0 || p.y() >= rows)
         return false;
     return grid[p.y()][p.x()] != 1;
 }
 
-bool AIController::isPassableWithBody(const QVector<QVector<int>>& grid,
-                                       const QPoint& p, int cols, int rows,
-                                       const QSet<int>& blocked)
+bool AIController::isPassableWithBody(const QVector<QVector<int>>& grid, const QPoint& p, int cols, int rows, const QSet<int>& blocked)
 {
     if (!isPassable(grid, p, cols, rows)) return false;
     return !blocked.contains(encode(p));

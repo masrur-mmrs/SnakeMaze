@@ -33,8 +33,6 @@ private:
     };
 
     static int  heuristic(const QPoint& a, const QPoint& b);
-    static bool isPassable(const QVector<QVector<int>>& grid,
-                           const QPoint& p, int cols, int rows,
-                           const QSet<int>& blocked);
+    static bool isPassable(const QVector<QVector<int>>& grid, const QPoint& p, int cols, int rows, const QSet<int>& blocked);
     static int  encode(const QPoint& p) { return p.x() * 1000 + p.y(); }
 };
