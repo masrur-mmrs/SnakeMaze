@@ -1,7 +1,3 @@
-// ────────────────────────────────────────────────────────────
-//  GameScreen.qml
-//  Hosts the maze renderer, HUD overlay, and keyboard input.
-// ────────────────────────────────────────────────────────────
 import QtQuick
 import QtQuick.Layouts
 import SnakeMaze 1.0
@@ -14,7 +10,6 @@ Item {
     signal pauseClicked
     signal quitClicked
 
-    // ── Keyboard input ─────────────────────────────────────
     focus: true
     Keys.onPressed: (event) => {
         switch (event.key) {
@@ -29,12 +24,10 @@ Item {
 
     Component.onCompleted: root.forceActiveFocus()
 
-    // ── Layout: HUD top + maze center ─────────────────────
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
 
-        // ── Top HUD ─────────────────────────────────────
         HUDOverlay {
             id: hud
             Layout.fillWidth: true
@@ -46,12 +39,10 @@ Item {
             onQuitClicked:  root.quitClicked()
         }
 
-        // ── Maze area ────────────────────────────────────
         Item {
             Layout.fillWidth:  true
             Layout.fillHeight: true
 
-            // Center the maze viewport
             MazeRenderer {
                 id: mazeView
                 anchors.centerIn: parent
@@ -73,7 +64,6 @@ Item {
                     bodyColor: "#AA3333"
                 }
 
-                // Forward power-up collection bursts
                 Connections {
                     target: engine.gameState
                     function onPowerUpCollected(x, y, type) {
@@ -82,7 +72,6 @@ Item {
                 }
             }
 
-            // Pause overlay
             Rectangle {
                 anchors.fill: parent
                 color: "#0D0F1A"

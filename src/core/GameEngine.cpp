@@ -4,7 +4,6 @@
 #include <QDebug>
 #include <QRandomGenerator>
 
-// ─────────────────────────────────────────────
 GameEngine::GameEngine(QObject* parent)
     : QObject(parent)
     , m_state(std::make_unique<GameState>(this))
@@ -18,16 +17,14 @@ GameEngine::GameEngine(QObject* parent)
 
 GameEngine::~GameEngine() = default;
 
-// ─────────────────────────────────────────────
 void GameEngine::startGame(int difficulty)
 {
     m_difficulty = difficulty;
 
-    // Tick speed per difficulty
     switch (difficulty) {
-    case 0: m_tickRateMs = 200; break;  // Easy
-    case 1: m_tickRateMs = 150; break;  // Medium
-    case 2: m_tickRateMs = 120; break;  // Hard (A*)
+    case 0: m_tickRateMs = 200; break;
+    case 1: m_tickRateMs = 150; break;
+    case 2: m_tickRateMs = 120; break;
     default: m_tickRateMs = 150;
     }
     emit tickRateChanged();
@@ -36,7 +33,6 @@ void GameEngine::startGame(int difficulty)
     m_tickTimer.start(m_tickRateMs);
 }
 
-// ─────────────────────────────────────────────
 void GameEngine::resetGame()
 {
     m_tickTimer.stop();
@@ -45,7 +41,6 @@ void GameEngine::resetGame()
     startGame(m_difficulty);
 }
 
-// ─────────────────────────────────────────────
 void GameEngine::pauseGame()
 {
     if (m_paused) return;
@@ -54,7 +49,6 @@ void GameEngine::pauseGame()
     emit pauseChanged();
 }
 
-// ─────────────────────────────────────────────
 void GameEngine::resumeGame()
 {
     if (!m_paused) return;
@@ -63,31 +57,25 @@ void GameEngine::resumeGame()
     emit pauseChanged();
 }
 
-// ─────────────────────────────────────────────
 void GameEngine::setPlayerDirection(int direction)
 {
     if (m_playerSnake)
         m_playerSnake->setDesiredDirection(static_cast<Snake::Direction>(direction));
 }
 
-// ─────────────────────────────────────────────
 void GameEngine::initLevel()
 {
-    // Generate fresh maze
     m_mazeGen->generate();
     m_state->setMaze(m_mazeGen->grid());
     m_goalPos = m_mazeGen->goalPos();
 
-    // Place player snake at top-left open cell
+
     m_playerSnake->reset(QPoint(1, 1), Snake::Direction::Right);
 
-    // Place CPU snake at bottom-right open cell
     m_cpuSnake->reset(QPoint(COLS - 2, ROWS - 2), Snake::Direction::Left);
 
-    // Reset scores
     m_state->resetScores();
 
-    // Spawn initial power-ups
     m_powerUps.clear();
     spawnPowerUps();
 
@@ -98,17 +86,14 @@ void GameEngine::initLevel()
     emit gameStateChanged();
 }
 
-// ─────────────────────────────────────────────
 void GameEngine::spawnPowerUps()
 {
-    // Never grow beyond the fixed cap
     if (m_powerUps.size() >= MAX_POWERUPS) return;
 
     const auto& grid = m_mazeGen->grid();
     int needed   = MAX_POWERUPS - m_powerUps.size();
     int attempts = 0;
 
-    // Track already-occupied positions to avoid duplicates
     QSet<QPair<int,int>> occupied;
     for (const PowerUp& p : m_powerUps)
         occupied.insert({p.position().x(), p.position().y()});
@@ -132,10 +117,8 @@ void GameEngine::spawnPowerUps()
     }
 }
 
-// ─────────────────────────────────────────────
 void GameEngine::onTick()
 {
-    // Ask AI to decide CPU direction
     m_aiController->update(
         m_difficulty,
         m_cpuSnake.get(),
@@ -156,20 +139,17 @@ void GameEngine::onTick()
     emit tick();
 }
 
-// ─────────────────────────────────────────────
 void GameEngine::moveSnakes()
 {
     m_playerSnake->move(m_mazeGen->grid(), COLS, ROWS);
     m_cpuSnake->move(m_mazeGen->grid(), COLS, ROWS);
 }
 
-// ─────────────────────────────────────────────
 void GameEngine::checkCollisions()
 {
     const QPoint playerHead = m_playerSnake->head();
     const QPoint cpuHead    = m_cpuSnake->head();
 
-    // Check power-up collection for both snakes
     for (int i = m_powerUps.size() - 1; i >= 0; --i) {
         const QPoint& pos = m_powerUps[i].position();
 
@@ -180,7 +160,6 @@ void GameEngine::checkCollisions()
             emit powerUpCollected(pos.x(), pos.y(), static_cast<int>(m_powerUps[i].type()));
             emit snakeGrew(true);
             m_powerUps.removeAt(i);
-            // Respawn a replacement
             spawnPowerUps();
             m_state->setPowerUps(m_powerUps);
             continue;
@@ -199,15 +178,12 @@ void GameEngine::checkCollisions()
     }
 }
 
-// ─────────────────────────────────────────────
 void GameEngine::checkGoal()
 {
     bool playerAtGoal = (m_playerSnake->head() == m_goalPos);
     bool cpuAtGoal    = (m_cpuSnake->head()    == m_goalPos);
 
     if (playerAtGoal || cpuAtGoal) {
-            // Use the actual goal position from the maze generator,
-            // not the approximated COLS/2 integer division.
             QPoint goal = m_mazeGen->goalPos();
 
             bool playerAtGoal = (m_playerSnake->head() == goal);
@@ -215,7 +191,6 @@ void GameEngine::checkGoal()
 
             if (!playerAtGoal && !cpuAtGoal) return;
 
-            // Stop the tick immediately — first arrival ends the game
             m_tickTimer.stop();
 
             int  ps = m_state->playerScore();
@@ -223,7 +198,7 @@ void GameEngine::checkGoal()
             bool playerWon;
 
             if (playerAtGoal && cpuAtGoal) {
-                playerWon = (ps >= cs);   // simultaneous arrival: higher score wins
+                playerWon = (ps >= cs);
             } else if (playerAtGoal) {
                 playerWon = true;
             } else {

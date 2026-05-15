@@ -7,7 +7,6 @@ GameState::GameState(QObject* parent)
     : QObject(parent)
 {}
 
-// ─────────────────────────────────────────────
 void GameState::setMaze(const QVector<QVector<int>>& grid)
 {
     m_maze.clear();
@@ -20,7 +19,6 @@ void GameState::setMaze(const QVector<QVector<int>>& grid)
     emit mazeChanged();
 }
 
-// ─────────────────────────────────────────────
 void GameState::setPowerUps(const QVector<PowerUp>& ups)
 {
     m_powerUps.clear();
@@ -55,7 +53,7 @@ QVariantList GameState::cpuBody() const {
     }
     return list;
 }
-// ─────────────────────────────────────────────
+
 void GameState::addPlayerScore(int pts)
 {
     m_playerScore += pts;

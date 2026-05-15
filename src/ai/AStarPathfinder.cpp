@@ -5,13 +5,11 @@
 #include <cmath>
 #include <limits>
 
-// ─────────────────────────────────────────────
 int AStarPathfinder::heuristic(const QPoint& a, const QPoint& b)
 {
     return std::abs(a.x() - b.x()) + std::abs(a.y() - b.y());
 }
 
-// ─────────────────────────────────────────────
 bool AStarPathfinder::isPassable(
     const QVector<QVector<int>>& grid,
     const QPoint& p, int cols, int rows,
@@ -24,12 +22,6 @@ bool AStarPathfinder::isPassable(
     return !blocked.contains(encode(p));
 }
 
-// ─────────────────────────────────────────────
-//  floodFill
-//  BFS from `origin`, counting all reachable cells not
-//  in `blocked` and not walls. Capped at 200 to keep
-//  it fast -- we only need relative comparisons.
-// ─────────────────────────────────────────────
 int AStarPathfinder::floodFill(
     const QPoint& origin,
     const QVector<QVector<int>>& grid,
@@ -65,18 +57,6 @@ int AStarPathfinder::floodFill(
     return count;
 }
 
-// ─────────────────────────────────────────────
-//  nextStep  --  body-aware A* with safe-space tiebreaking
-//
-//  Algorithm:
-//  1. Build a `blocked` set from snakeBody (excluding the
-//     tail, which will vacate next tick -- so it's safe to
-//     move into).
-//  2. Run A* on the effective grid (walls + blocked body).
-//  3. Reconstruct the first step of the found path.
-//  4. If no path exists, fall back to the safest open
-//     neighbour ranked by flood-fill reachable space.
-// ─────────────────────────────────────────────
 QPoint AStarPathfinder::nextStep(
     const QPoint& start,
     const QPoint& goal,
@@ -86,14 +66,11 @@ QPoint AStarPathfinder::nextStep(
 {
     if (start == goal) return goal;
 
-    // -- 1. Build blocked set (body minus tail) ---------------
     QSet<int> blocked;
     int bodySize = snakeBody.size();
-    // Tail (last element) vacates next tick, so we skip it.
     for (int i = 0; i < bodySize - 1; ++i)
         blocked.insert(encode(snakeBody[i]));
 
-    // -- 2. A* ------------------------------------------------
     QMap<int, Node>   openMap;
     QSet<int>         closedSet;
     QMap<int, QPoint> cameFrom;
@@ -110,7 +87,6 @@ QPoint AStarPathfinder::nextStep(
     bool found = false;
 
     while (!openMap.isEmpty() && !found) {
-        // Pop node with lowest f
         int bestKey = -1;
         int bestF   = std::numeric_limits<int>::max();
         for (auto it = openMap.cbegin(); it != openMap.cend(); ++it) {
@@ -144,7 +120,6 @@ QPoint AStarPathfinder::nextStep(
         }
     }
 
-    // -- 3. Reconstruct first step ----------------------------
     if (found) {
         QPoint step = goal;
         while (cameFrom.contains(encode(step))) {
@@ -155,10 +130,6 @@ QPoint AStarPathfinder::nextStep(
         return step;
     }
 
-    // -- 4. Fallback: safest open neighbour by flood-fill -----
-    //    When A* can't reach the goal (temporarily blocked by
-    //    body), pick the neighbour with the most reachable
-    //    open space so the snake keeps moving and doesn't freeze.
     int    bestSpace = -1;
     QPoint bestNb   { -1, -1 };
 
@@ -167,7 +138,7 @@ QPoint AStarPathfinder::nextStep(
         if (!isPassable(grid, nb, cols, rows, blocked)) continue;
 
         QSet<int> fbBlocked = blocked;
-        fbBlocked.insert(encode(start));   // head will move away
+        fbBlocked.insert(encode(start));
 
         int space = floodFill(nb, grid, cols, rows, fbBlocked);
         if (space > bestSpace) {
@@ -176,5 +147,5 @@ QPoint AStarPathfinder::nextStep(
         }
     }
 
-    return bestNb;   // QPoint(-1,-1) only if truly boxed in
+    return bestNb;
 }

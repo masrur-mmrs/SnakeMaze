@@ -10,7 +10,6 @@
 static const int DX[] = {0, 1, 0, -1};
 static const int DY[] = {-1, 0, 1, 0};
 
-// ─────────────────────────────────────────────
 void AIController::update(
     int difficulty,
     Snake* cpuSnake,
@@ -32,9 +31,6 @@ void AIController::update(
     }
 }
 
-// ─────────────────────────────────────────────
-//  EASY – Random walk with wall avoidance
-// ─────────────────────────────────────────────
 void AIController::easyUpdate(Snake* cpu,
                                const QVector<QVector<int>>& grid,
                                int cols, int rows)
@@ -60,9 +56,6 @@ void AIController::easyUpdate(Snake* cpu,
     m_ticksSinceDirectionChange = 0;
 }
 
-// ─────────────────────────────────────────────
-//  MEDIUM – Greedy Manhattan toward goal
-// ─────────────────────────────────────────────
 void AIController::mediumUpdate(Snake* cpu,
                                  const QVector<QVector<int>>& grid,
                                  const QPoint& goal,
@@ -84,9 +77,6 @@ void AIController::mediumUpdate(Snake* cpu,
         cpu->setDesiredDirection(static_cast<Snake::Direction>(bestDir));
 }
 
-// ─────────────────────────────────────────────
-//  HARD – Body-aware A* with dead-end avoidance
-// ─────────────────────────────────────────────
 void AIController::hardUpdate(Snake* cpu,
                                const QVector<QVector<int>>& grid,
                                const QPoint& goal,
@@ -96,29 +86,22 @@ void AIController::hardUpdate(Snake* cpu,
     QPoint head = cpu->head();
     const QVector<QPoint>& body = cpu->body();
 
-    // Build blocked set for body (tail excluded -- it vacates next tick)
     QSet<int> bodyBlocked;
     for (int i = 0; i < body.size() - 1; ++i)
         bodyBlocked.insert(encode(body[i]));
 
-    // ── 1. Choose target: goal or nearby star power-up ──────
     QPoint target = goal;
 
-    // Measure A* distance to goal (with body awareness)
-    // We use a lightweight estimate here: just Manhattan with body check.
-    // Real A* is run below for the actual move.
     int goalManhattan = std::abs(head.x()-goal.x()) + std::abs(head.y()-goal.y());
 
     for (const PowerUp& pu : powerUps) {
         if (pu.type() != PowerUp::Type::Star) continue;
         QPoint ppos = pu.position();
 
-        // Skip if power-up is inside our own body region
         if (bodyBlocked.contains(encode(ppos))) continue;
 
         int puManhattan = std::abs(head.x()-ppos.x()) + std::abs(head.y()-ppos.y());
 
-        // Only detour if power-up is close AND it doesn't take us far from goal
         int detourCost = puManhattan
                        + std::abs(ppos.x()-goal.x())
                        + std::abs(ppos.y()-goal.y());
@@ -129,16 +112,11 @@ void AIController::hardUpdate(Snake* cpu,
         }
     }
 
-    // ── 2. Run body-aware A* toward target ──────────────────
     QPoint nextCell = AStarPathfinder::nextStep(head, target, grid, cols, rows, body);
 
-    // ── 3. Dead-end safety check ────────────────────────────
-    //    After choosing the A* step, verify it doesn't lead
-    //    into a pocket with too little space (< half our body length).
-    //    If it does, prefer the neighbour with the most open space.
     if (nextCell.x() >= 0) {
         QSet<int> afterMove = bodyBlocked;
-        afterMove.insert(encode(head));  // head becomes new body cell
+        afterMove.insert(encode(head));
 
         int pathSpace = AStarPathfinder::floodFill(
             nextCell, grid, cols, rows, afterMove);
@@ -146,13 +124,11 @@ void AIController::hardUpdate(Snake* cpu,
         int minSafeSpace = qMax(4, body.size() / 2);
 
         if (pathSpace < minSafeSpace) {
-            // A* path is unsafe -- switch to survival mode
             survivalMove(cpu, grid, cols, rows);
             return;
         }
     }
 
-    // ── 4. Apply direction or fall back to survival ──────────
     if (nextCell.x() >= 0) {
         int dir = toDirection(head, nextCell);
         if (dir >= 0) {
@@ -161,16 +137,9 @@ void AIController::hardUpdate(Snake* cpu,
         }
     }
 
-    // A* returned nothing valid -- survive
     survivalMove(cpu, grid, cols, rows);
 }
 
-// ─────────────────────────────────────────────
-//  survivalMove
-//  When no safe path exists, pick the open neighbour
-//  with the largest flood-fill reachable area.
-//  This keeps the snake moving and avoids self-trapping.
-// ─────────────────────────────────────────────
 void AIController::survivalMove(Snake* cpu,
                                  const QVector<QVector<int>>& grid,
                                  int cols, int rows)
@@ -206,7 +175,6 @@ void AIController::survivalMove(Snake* cpu,
     }
 }
 
-// ─────────────────────────────────────────────
 bool AIController::isPassable(const QVector<QVector<int>>& grid,
                                const QPoint& p, int cols, int rows)
 {
@@ -223,13 +191,12 @@ bool AIController::isPassableWithBody(const QVector<QVector<int>>& grid,
     return !blocked.contains(encode(p));
 }
 
-// ─────────────────────────────────────────────
 int AIController::toDirection(const QPoint& from, const QPoint& to)
 {
     QPoint d = to - from;
-    if (d == QPoint( 0, -1)) return 0;  // Up
-    if (d == QPoint( 1,  0)) return 1;  // Right
-    if (d == QPoint( 0,  1)) return 2;  // Down
-    if (d == QPoint(-1,  0)) return 3;  // Left
+    if (d == QPoint( 0, -1)) return 0;
+    if (d == QPoint( 1,  0)) return 1;
+    if (d == QPoint( 0,  1)) return 2;
+    if (d == QPoint(-1,  0)) return 3;
     return -1;
 }

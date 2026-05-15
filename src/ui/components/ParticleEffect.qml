@@ -1,15 +1,10 @@
-// ────────────────────────────────────────────────────────────
-//  ParticleEffect.qml
-//  Short-lived burst of particles spawned at power-up
-//  collection point. Auto-destroys when animation ends.
-// ────────────────────────────────────────────────────────────
 import QtQuick
 
 Item {
     id: root
     property color burstColor: "#FFD166"
 
-    width:  1; height: 1   // zero-size anchor point
+    width:  1; height: 1
 
     Component.onCompleted: killTimer.start()
 

@@ -1,8 +1,3 @@
-// ────────────────────────────────────────────────────────────
-//  MazeRenderer.qml
-//  Canvas-based renderer for the maze grid.
-//  Draws: walls, paths, goal, power-ups, and both snakes.
-// ────────────────────────────────────────────────────────────
 import QtQuick
 
 Item {
@@ -11,14 +6,12 @@ Item {
     property var  gameState: null
     property int  cellSize:  32
 
-    // Derived dimensions
     readonly property int cols: 21
     readonly property int rows: 21
 
     width:  cols * cellSize
     height: rows * cellSize
 
-    // ── Burst particles layer ──────────────────────────────
     property var burstPool: []
 
     function spawnBurst(cellX, cellY, type) {
@@ -34,7 +27,6 @@ Item {
         }
     }
 
-    // ── Connections to game state ─────────────────────────
     Connections {
         target: root.gameState
         function onMazeChanged()     { mazeCanvas.requestPaint() }
@@ -42,7 +34,6 @@ Item {
         function onPowerUpsChanged() { powerUpCanvas.requestPaint() }
     }
 
-    // ── Layer 1: Static maze (walls + paths + goal) ───────
     Canvas {
         id: mazeCanvas
         anchors.fill: parent
@@ -64,18 +55,14 @@ Item {
                     var y   = r * cs
 
                     if (val === 1) {
-                        // Wall: layered dark blue rectangle
                         ctx.fillStyle = "#0F1225"
                         ctx.fillRect(x, y, cs, cs)
-                        // Subtle highlight edge
                         ctx.fillStyle = "#1A2040"
                         ctx.fillRect(x, y, cs, 2)
                         ctx.fillRect(x, y, 2, cs)
                     } else if (val === 2) {
-                        // Goal cell: golden glow
                         ctx.fillStyle = "#111428"
                         ctx.fillRect(x, y, cs, cs)
-                        // Inner glow circle
                         var grd = ctx.createRadialGradient(
                             x + cs/2, y + cs/2, 2,
                             x + cs/2, y + cs/2, cs * 0.7)
@@ -84,28 +71,24 @@ Item {
                         grd.addColorStop(1,   "rgba(255,209,102,0)")
                         ctx.fillStyle = grd
                         ctx.fillRect(x, y, cs, cs)
-                        // Star symbol
                         ctx.fillStyle = "#FFD166"
                         ctx.font = Math.floor(cs * 0.65) + "px serif"
                         ctx.textAlign    = "center"
                         ctx.textBaseline = "middle"
                         ctx.fillText("★", x + cs/2, y + cs/2)
                     } else {
-                        // Open path: very dark navy
                         ctx.fillStyle = "#111428"
                         ctx.fillRect(x, y, cs, cs)
                     }
                 }
             }
 
-            // Outer border
             ctx.strokeStyle = "#44E5A0"
             ctx.lineWidth   = 2
             ctx.strokeRect(1, 1, width - 2, height - 2)
         }
     }
 
-    // ── Layer 2: Power-ups ─────────────────────────────────
     Canvas {
         id: powerUpCanvas
         anchors.fill: parent
@@ -128,7 +111,6 @@ Item {
                 var py = up.y * cs + cs/2
                 var t  = up.type
 
-                // Glow
                 var grd = ctx.createRadialGradient(px, py, 1, px, py, cs * 0.55)
                 grd.addColorStop(0,   glows[t] + "0.4)")
                 grd.addColorStop(1,   glows[t] + "0)")
@@ -137,13 +119,11 @@ Item {
                 ctx.arc(px, py, cs * 0.55, 0, Math.PI * 2)
                 ctx.fill()
 
-                // Circle bg
                 ctx.fillStyle = "#151828"
                 ctx.beginPath()
                 ctx.arc(px, py, cs * 0.30, 0, Math.PI * 2)
                 ctx.fill()
 
-                // Icon
                 ctx.fillStyle    = colors[t]
                 ctx.font         = Math.floor(cs * 0.38) + "px serif"
                 ctx.textAlign    = "center"
@@ -153,7 +133,6 @@ Item {
         }
     }
 
-    // ── Layer 3: Snakes ────────────────────────────────────
     Canvas {
         id: snakeCanvas
         anchors.fill: parent
@@ -176,16 +155,14 @@ Item {
 
             var radius = cs * 0.38
 
-            // Draw body segments (back to front)
             for (var i = body.length - 1; i >= 0; i--) {
                 var seg = body[i]
                 var cx  = seg.x * cs + cs/2
                 var cy  = seg.y * cs + cs/2
 
-                var t = i / (body.length - 1)   // 0 = head, 1 = tail
+                var t = i / (body.length - 1)
 
                 if (i === 0) {
-                    // Glow behind head
                     var grd = ctx.createRadialGradient(cx, cy, 1, cx, cy, cs * 0.55)
                     grd.addColorStop(0, headColor + "55")
                     grd.addColorStop(1, headColor + "00")
@@ -194,24 +171,20 @@ Item {
                     ctx.arc(cx, cy, cs * 0.55, 0, Math.PI * 2)
                     ctx.fill()
 
-                    // Save and rotate — 0° = Up, 90° = Right, 180° = Down, 270° = Left
                     ctx.save()
                     ctx.translate(cx, cy)
                     ctx.rotate(dirAngle * Math.PI / 180)
 
-                    // Head circle
                     ctx.fillStyle = headColor
                     ctx.beginPath()
                     ctx.arc(0, 0, radius * 1.15, 0, Math.PI * 2)
                     ctx.fill()
 
-                    // Snout (forward = negative Y in local space after rotation)
                     ctx.fillStyle = headColor
                     ctx.beginPath()
                     ctx.ellipse(0, -(radius * 1.05), radius * 0.50, radius * 0.38, 0, 0, Math.PI * 2)
                     ctx.fill()
 
-                    // Eyes
                     var er   = cs * 0.10
                     var eyeY = -(radius * 0.32)
                     ctx.fillStyle = "#FFFFFF"
@@ -229,7 +202,6 @@ Item {
                     ctx.arc( radius * 0.38, eyeY - er * 0.3, er * 0.55, 0, Math.PI * 2)
                     ctx.fill()
 
-                    // Tongue
                     ctx.strokeStyle = isPlayer ? "#FF6B9D" : "#FF3355"
                     ctx.lineWidth   = 1.5
                     ctx.lineCap     = "round"
@@ -249,7 +221,6 @@ Item {
                     ctx.restore()
 
                 } else {
-                    // Body: fades toward tail
                     var alpha = 0.85 - t * 0.45
                     ctx.globalAlpha = alpha
                     ctx.fillStyle   = bodyColor
@@ -259,7 +230,6 @@ Item {
                     ctx.arc(cx, cy, Math.max(segRadius, 3), 0, Math.PI * 2)
                     ctx.fill()
 
-                    // Segment connector line to next
                     if (i < body.length - 1) {
                         var next = body[i + 1]
                         ctx.strokeStyle = bodyColor
@@ -277,7 +247,6 @@ Item {
         }
     }
 
-    // ── Power-up pulse animation ───────────────────────────
     Timer {
         interval: 60
         running:  true

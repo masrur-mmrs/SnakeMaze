@@ -1,8 +1,3 @@
-// ────────────────────────────────────────────────────────────
-//  DifficultyCard.qml
-//  A single difficulty selection card with hover animation.
-// ────────────────────────────────────────────────────────────
-
 import QtQuick
 import QtQuick.Layouts
 

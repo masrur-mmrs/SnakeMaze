@@ -1,13 +1,9 @@
-// ────────────────────────────────────────────────────────────
-//  PowerUpItem.qml
-//  Reusable power-up icon with label, used in legend or HUD.
-// ────────────────────────────────────────────────────────────
 import QtQuick
 import QtQuick.Layouts
 
 RowLayout {
     id: root
-    property int  powerType: 0   // 0=Star 1=Berry 2=Crystal
+    property int  powerType: 0
     property bool showLabel: true
 
     spacing: 6

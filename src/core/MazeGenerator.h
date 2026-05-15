@@ -4,14 +4,6 @@
 #include <QVector>
 #include <QPoint>
 
-// ─────────────────────────────────────────────
-//  MazeGenerator
-//  Generates a perfect maze using Recursive
-//  Division. Grid values:
-//    0 = open path
-//    1 = wall
-//    2 = goal (center cell)
-// ─────────────────────────────────────────────
 class MazeGenerator : public QObject
 {
     Q_OBJECT
@@ -26,7 +18,7 @@ public:
 
 private:
     void initGrid();
-    void carvePath(int x, int y);                // Recursive backtracking
+    void carvePath(int x, int y);
     void placeGoal();
 
     static int dx(int dir);

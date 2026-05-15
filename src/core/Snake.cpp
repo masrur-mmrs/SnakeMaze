@@ -6,18 +6,16 @@ Snake::Snake(bool isPlayer, QObject* parent)
     , m_isPlayer(isPlayer)
 {}
 
-// ─────────────────────────────────────────────
 void Snake::reset(const QPoint& startPos, Direction startDir)
 {
     m_body.clear();
     m_body.append(startPos);
     m_direction        = startDir;
     m_desiredDirection = startDir;
-    m_growPending      = 2;   // start with length 3
+    m_growPending      = 2;
     m_alive            = true;
     m_score            = 0;
 
-    // Build initial body behind the head
     QPoint offset;
     switch (startDir) {
     case Direction::Right: offset = {-1,  0}; break;
@@ -50,16 +48,13 @@ bool Snake::isBlockedAhead(const QVector<QVector<int>>& grid, int cols, int rows
     return grid[next.y()][next.x()] == 1;
 }
 
-// ─────────────────────────────────────────────
 void Snake::move(const QVector<QVector<int>>& grid, int cols, int rows)
 {
     if (!m_alive) return;
 
-    // Apply desired direction (ignore 180° reversal)
     if (!isOppositeDirection(m_direction, m_desiredDirection)){
         m_direction = m_desiredDirection;
     } else if (isBlockedAhead(grid, cols, rows)) {
-        // Allow U-turn only when wall is straight ahead — dead end escape
         m_direction = m_desiredDirection;
     }
 
@@ -73,7 +68,6 @@ void Snake::move(const QVector<QVector<int>>& grid, int cols, int rows)
 
     QPoint newHead = m_body.first() + delta;
 
-    // Boundary check
     if (newHead.x() < 0 || newHead.x() >= cols ||
         newHead.y() < 0 || newHead.y() >= rows) {
         m_alive = false;
@@ -81,17 +75,14 @@ void Snake::move(const QVector<QVector<int>>& grid, int cols, int rows)
         return;
     }
 
-    // Wall check (grid value 1 = wall)
     if (grid[newHead.y()][newHead.x()] == 1) {
-        // Snake bounces / stops rather than dying (softer gameplay)
-        // Just don't move this tick
         return;
     }
 
     m_body.prepend(newHead);
 
     if (m_growPending > 0) {
-        --m_growPending;  // don't remove tail
+        --m_growPending;
     } else {
         m_body.removeLast();
     }
@@ -99,19 +90,16 @@ void Snake::move(const QVector<QVector<int>>& grid, int cols, int rows)
     emit bodyChanged();
 }
 
-// ─────────────────────────────────────────────
 void Snake::grow(int segments)
 {
     m_growPending += segments;
 }
 
-// ─────────────────────────────────────────────
 void Snake::setDesiredDirection(Direction dir)
 {
     m_desiredDirection = dir;
 }
 
-// ─────────────────────────────────────────────
 QVariantList Snake::bodyVariant() const
 {
     QVariantList list;
@@ -125,7 +113,6 @@ QVariantList Snake::bodyVariant() const
     return list;
 }
 
-// ─────────────────────────────────────────────
 bool Snake::isOppositeDirection(Direction a, Direction b) const
 {
     return (static_cast<int>(a) + 2) % 4 == static_cast<int>(b);

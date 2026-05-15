@@ -1,8 +1,3 @@
-// ────────────────────────────────────────────────────────────
-//  Main.qml
-//  Root application window. Manages screen transitions
-//  between Menu → Difficulty → Game → GameOver.
-// ────────────────────────────────────────────────────────────
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Material
@@ -15,12 +10,11 @@ ApplicationWindow {
     visible: true
     title:   "SnakeMaze"
 
-    // ── Color palette (flat, vivid) ─────────────────────────
     readonly property color bgDeep:        "#0D0F1A"
     readonly property color bgCard:        "#151828"
-    readonly property color accentPlayer:  "#44E5A0"   // mint green
-    readonly property color accentCPU:     "#FF5E78"   // coral red
-    readonly property color accentGoal:    "#FFD166"   // golden yellow
+    readonly property color accentPlayer:  "#44E5A0"
+    readonly property color accentCPU:     "#FF5E78"
+    readonly property color accentGoal:    "#FFD166"
     readonly property color accentStar:    "#FFD166"
     readonly property color accentBerry:   "#C77DFF"
     readonly property color accentCrystal: "#48CAE4"
@@ -31,7 +25,6 @@ ApplicationWindow {
 
     color: bgDeep
 
-    // ── Central game engine instance ────────────────────────
     GameEngine {
         id: engine
 
@@ -39,27 +32,22 @@ ApplicationWindow {
             gameOverScreen.playerWon   = playerWon
             gameOverScreen.playerScore = ps
             gameOverScreen.cpuScore    = cs
-            screenStack.currentIndex   = 3  // show game over
+            screenStack.currentIndex   = 3
         }
 
-        onPowerUpCollected: (x, y, type) => {
-            // Burst particle is created by GameScreen watching this signal
-        }
+        onPowerUpCollected: (x, y, type) => {}
     }
 
-    // ── Screen stack ────────────────────────────────────────
     StackLayout {
         id: screenStack
         anchors.fill: parent
-        currentIndex: 0   // 0=Menu, 1=Difficulty, 2=Game, 3=GameOver
+        currentIndex: 0
 
-        // 0 ── Main Menu
         MenuScreen {
             id: menuScreen
             onPlayClicked:    screenStack.currentIndex = 1
         }
 
-        // 1 ── Difficulty selection
         DifficultyScreen {
             id: diffScreen
             onDifficultySelected: (diff) => {
@@ -69,7 +57,6 @@ ApplicationWindow {
             onBackClicked: screenStack.currentIndex = 0
         }
 
-        // 2 ── Gameplay
         GameScreen {
             id: gameScreen
             engine:    engine
@@ -80,7 +67,6 @@ ApplicationWindow {
             }
         }
 
-        // 3 ── Game Over
         GameOverScreen {
             id: gameOverScreen
             onPlayAgainClicked: {
@@ -91,7 +77,6 @@ ApplicationWindow {
         }
     }
 
-    // ── Screen transition overlay ───────────────────────────
     Rectangle {
         id: transitionOverlay
         anchors.fill: parent

@@ -7,18 +7,6 @@
 class Snake;
 class PowerUp;
 
-// ─────────────────────────────────────────────
-//  AIController
-//  Selects and executes the AI strategy based
-//  on the current difficulty level.
-//
-//  Difficulty 0 (Easy)   – Random walk
-//  Difficulty 1 (Medium) – Greedy Manhattan toward goal
-//  Difficulty 2 (Hard)   – Body-aware A* with:
-//                            • flood-fill dead-end avoidance
-//                            • survival mode when boxed in
-//                            • smart power-up detours
-// ─────────────────────────────────────────────
 class AIController
 {
 public:
@@ -47,11 +35,9 @@ private:
                       const QVector<PowerUp>& powerUps,
                       int cols, int rows);
 
-    // Survival: when no path to goal, just maximise open space
     void survivalMove(Snake* cpu, const QVector<QVector<int>>& grid,
                       int cols, int rows);
 
-    // Helpers
     static bool isPassable(const QVector<QVector<int>>& grid,
                             const QPoint& p, int cols, int rows);
 

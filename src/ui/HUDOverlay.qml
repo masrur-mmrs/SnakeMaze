@@ -1,7 +1,3 @@
-// ────────────────────────────────────────────────────────────
-//  HUDOverlay.qml
-//  Top bar: player score, goal indicator, CPU score, controls
-// ────────────────────────────────────────────────────────────
 import QtQuick
 import QtQuick.Layouts
 import SnakeMaze 1.0
@@ -10,7 +6,6 @@ Rectangle {
     id: root
     color: "#0D0F1A"
 
-    // Bottom border line
     Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width; height: 1
@@ -30,7 +25,6 @@ Rectangle {
         anchors.rightMargin: 16
         spacing: 0
 
-        // ── Player score ─────────────────────────────────
         ScorePanel {
             label:      "YOU"
             score:      root.playerScore
@@ -40,7 +34,6 @@ Rectangle {
 
         Item { Layout.fillWidth: true }
 
-        // ── Center: goal reminder ─────────────────────────
         ColumnLayout {
             spacing: 2
             Layout.alignment: Qt.AlignVCenter
@@ -63,7 +56,6 @@ Rectangle {
 
         Item { Layout.fillWidth: true }
 
-        // ── Pause / quit buttons ──────────────────────────
         RowLayout {
             spacing: 8
 
@@ -115,7 +107,6 @@ Rectangle {
 
         Item { width: 12 }
 
-        // ── CPU score ────────────────────────────────────
         ScorePanel {
             label:       "CPU"
             score:       root.cpuScore

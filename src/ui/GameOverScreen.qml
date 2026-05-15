@@ -1,7 +1,3 @@
-// ────────────────────────────────────────────────────────────
-//  GameOverScreen.qml
-//  Results screen with winner announcement and replay option.
-// ────────────────────────────────────────────────────────────
 import QtQuick
 import QtQuick.Layouts
 import SnakeMaze 1.0
@@ -16,7 +12,6 @@ Item {
     signal playAgainClicked
     signal menuClicked
 
-    // Animated background flash on entry
     Rectangle {
         anchors.fill: parent
         color: root.playerWon ? "#44E5A0" : "#FF5E78"
@@ -40,7 +35,6 @@ Item {
         spacing: 0
         width: 400
 
-        // Trophy / skull
         Text {
             Layout.alignment: Qt.AlignHCenter
             text:  root.playerWon ? "🏆" : "💀"
@@ -79,7 +73,6 @@ Item {
 
         Item { height: 40 }
 
-        // Score breakdown
         Rectangle {
             Layout.alignment: Qt.AlignHCenter
             width:  340; height: 80
@@ -159,7 +152,6 @@ Item {
         }
     }
 
-    // Entry animation
     opacity: 0
     NumberAnimation on opacity { from: 0; to: 1; duration: 500; running: true }
 }

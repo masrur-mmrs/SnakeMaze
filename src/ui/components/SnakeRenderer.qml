@@ -1,14 +1,9 @@
-// ────────────────────────────────────────────────────────────
-//  SnakeRenderer.qml
-//  Standalone snake preview widget used in menus and stats.
-//  Renders a static or animated snake body from a body list.
-// ────────────────────────────────────────────────────────────
 import QtQuick
 
 Canvas {
     id: root
 
-    property var   body:       []      // list of {x, y} in cell coords
+    property var   body:       []
     property color headColor:  "#44E5A0"
     property color bodyColor:  "#2AC87A"
     property int   cellSize:   24

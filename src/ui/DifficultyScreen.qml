@@ -1,7 +1,3 @@
-// ────────────────────────────────────────────────────────────
-//  DifficultyScreen.qml
-//  Three difficulty cards with descriptions.
-// ────────────────────────────────────────────────────────────
 import QtQuick
 import QtQuick.Layouts
 import SnakeMaze 1.0
@@ -36,7 +32,6 @@ Item {
 
         Item { height: 48 }
 
-        // Difficulty cards row
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
             spacing: 20
@@ -84,7 +79,6 @@ Item {
         }
     }
 
-    // Entry animation
     opacity: 0
     NumberAnimation on opacity { from: 0; to: 1; duration: 400; running: true }
 }

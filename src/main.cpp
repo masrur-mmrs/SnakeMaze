@@ -16,10 +16,8 @@ int main(int argc, char* argv[])
     app.setApplicationVersion("1.0");
     app.setOrganizationName("SnakeMaze");
 
-    // Use Material style for modern look
     QQuickStyle::setStyle("Material");
 
-    // Register C++ types for use in QML
     qmlRegisterType<GameEngine>("SnakeMaze", 1, 0, "GameEngine");
     qmlRegisterUncreatableType<GameState>(
         "SnakeMaze", 1, 0, "GameState",

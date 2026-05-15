@@ -1,7 +1,3 @@
-// ────────────────────────────────────────────────────────────
-//  AnimatedButton.qml
-//  Reusable flat button with hover glow and press animation.
-// ────────────────────────────────────────────────────────────
 import QtQuick
 
 Rectangle {
@@ -27,7 +23,6 @@ Rectangle {
     scale: area.pressed ? 0.96 : 1.0
     Behavior on scale { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
 
-    // Glow effect
     Rectangle {
         anchors.fill: parent
         radius: parent.radius

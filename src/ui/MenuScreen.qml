@@ -1,7 +1,3 @@
-// ────────────────────────────────────────────────────────────
-//  MenuScreen.qml
-//  Animated main menu with floating particle background.
-// ────────────────────────────────────────────────────────────
 import QtQuick
 import QtQuick.Layouts
 import SnakeMaze 1.0
@@ -10,7 +6,6 @@ Item {
     id: root
     signal playClicked
 
-    // ── Animated background particles ──────────────────────
     Repeater {
         model: 24
         delegate: Rectangle {
@@ -52,7 +47,6 @@ Item {
         }
     }
 
-    // ── Subtle grid lines ──────────────────────────────────
     Canvas {
         anchors.fill: parent
         opacity: 0.04
@@ -70,18 +64,15 @@ Item {
         }
     }
 
-    // ── Centered content ───────────────────────────────────
     ColumnLayout {
         anchors.centerIn: parent
         spacing: 0
 
-        // Logo / title
         Item {
             Layout.alignment: Qt.AlignHCenter
             width:  320
             height: 140
 
-            // Glow behind title
             Rectangle {
                 anchors.centerIn: parent
                 width:   260; height: 80
@@ -90,7 +81,7 @@ Item {
                 border.width: 0
 
                 layer.enabled: true
-                layer.effect: null   // Replace with QtGraphicalEffects if available
+                layer.effect: null
 
                 Rectangle {
                     anchors.centerIn: parent
@@ -138,7 +129,6 @@ Item {
 
         Item { height: 52 }
 
-        // Play button
         AnimatedButton {
             Layout.alignment: Qt.AlignHCenter
             label:      "PLAY GAME"
@@ -150,7 +140,6 @@ Item {
 
         Item { height: 16 }
 
-        // How to play
         Text {
             Layout.alignment: Qt.AlignHCenter
             text: "Use ← ↑ ↓ → or WASD to steer your snake"
@@ -159,7 +148,6 @@ Item {
         }
     }
 
-    // ── Version tag ────────────────────────────────────────
     Text {
         anchors.bottom: parent.bottom
         anchors.right:  parent.right
@@ -169,7 +157,6 @@ Item {
         color: "#2A3050"
     }
 
-    // ── Entry animation ────────────────────────────────────
     opacity: 0
     NumberAnimation on opacity {
         from: 0; to: 1

@@ -6,11 +6,6 @@
 
 class Snake;
 
-// ─────────────────────────────────────────────
-//  GameState
-//  Read-only mirror of game world state for QML.
-//  GameEngine writes; QML reads via Q_PROPERTY.
-// ─────────────────────────────────────────────
 class GameState : public QObject
 {
     Q_OBJECT
@@ -29,19 +24,17 @@ class GameState : public QObject
 public:
     explicit GameState(QObject* parent = nullptr);
 
-    // ── Accessors (QML-facing) ──────────────────
     QVariantList maze()        const { return m_maze;        }
     QVariantList playerBody()  const;
     QVariantList cpuBody()     const;
     QVariantList powerUps()    const { return m_powerUps;    }
     int          playerScore() const { return m_playerScore; }
     int          cpuScore()    const { return m_cpuScore;    }
-    int          goalX()       const { return 10; }  // COLS/2
-    int          goalY()       const { return 10; }  // ROWS/2
+    int          goalX()       const { return 10; }
+    int          goalY()       const { return 10; }
     int playerDirAngle() const;
     int cpuDirAngle()    const;
 
-    // ── Setters (called by GameEngine) ──────────
     void setMaze(const QVector<QVector<int>>& grid);
     void setPlayerSnake(Snake* s) { m_playerSnake = s; }
     void setCpuSnake(Snake* s)    { m_cpuSnake    = s; }

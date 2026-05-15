@@ -4,12 +4,6 @@
 #include <QPoint>
 #include <QVector>
 
-// ─────────────────────────────────────────────
-//  Snake
-//  Represents either the player or CPU snake.
-//  Exposed to QML through GameState as a simple
-//  value container (body positions + metadata).
-// ─────────────────────────────────────────────
 class Snake : public QObject
 {
     Q_OBJECT
@@ -25,13 +19,11 @@ public:
 
     explicit Snake(bool isPlayer, QObject* parent = nullptr);
 
-    // ── State management ────────────────────────
     void reset(const QPoint& startPos, Direction startDir);
     void move(const QVector<QVector<int>>& grid, int cols, int rows);
     void grow(int segments = 1);
     void setDesiredDirection(Direction dir);
 
-    // ── Accessors ───────────────────────────────
     QPoint              head()       const { return m_body.isEmpty() ? QPoint{} : m_body.first(); }
     const QVector<QPoint>& body()   const { return m_body; }
     QVariantList        bodyVariant() const;
@@ -40,7 +32,6 @@ public:
     bool                isPlayer()  const { return m_isPlayer; }
     Direction           direction() const { return m_direction; }
 
-    // Score helpers (used by GameEngine)
     void addScore(int pts) { m_score += pts; emit scoreChanged(); }
     void resetScore()      { m_score = 0;    emit scoreChanged(); }
 

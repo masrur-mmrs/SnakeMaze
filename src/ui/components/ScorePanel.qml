@@ -1,7 +1,3 @@
-// ────────────────────────────────────────────────────────────
-//  ScorePanel.qml
-//  Compact score display for HUD.
-// ────────────────────────────────────────────────────────────
 import QtQuick
 import QtQuick.Layouts
 
@@ -38,7 +34,6 @@ ColumnLayout {
             NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
         }
 
-        // Pop animation on score change
         onDisplayScoreChanged: {
             popAnim.restart()
         }

@@ -5,16 +5,6 @@
 #include <QVariantList>
 #include <QVariantMap>
 
-// ─────────────────────────────────────────────
-//  PowerUp
-//  Value type representing a collectible item
-//  on the maze grid.
-//
-//  Types:
-//   Star   – high points, small grow
-//   Berry  – medium points, medium grow
-//   Crystal– low points, large grow
-// ─────────────────────────────────────────────
 class PowerUp
 {
 public:
@@ -35,7 +25,6 @@ private:
     Type   m_type = Type::Berry;
 };
 
-// ─────────────────────────────────────────────
 inline PowerUp::PowerUp(const QPoint& pos, Type t)
     : m_pos(pos), m_type(t) {}
 
