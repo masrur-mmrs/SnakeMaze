@@ -48,10 +48,10 @@ Item {
 
             DifficultyCard {
                 label:       "MEDIUM"
-                subtitle:    "Greedy Pathfind"
+                subtitle:    "Dijkstra Algorithm"
                 accentColor: "#FFD166"
                 iconText:    "⚡"
-                descText:    "CPU heads toward the\ngoal without planning."
+                descText:    "CPU finds shortest path,\navoiding tight corridors."
                 diffIndex:   1
                 onCardClicked: (i) => root.difficultySelected(i)
             }

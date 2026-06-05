@@ -1,5 +1,6 @@
 #include "AIController.h"
 #include "AStarPathfinder.h"
+#include "DijkstraPathfinder.h"
 #include "../core/Snake.h"
 #include "../core/PowerUp.h"
 
@@ -55,20 +56,29 @@ void AIController::easyUpdate(Snake* cpu, const QVector<QVector<int>>& grid, int
 void AIController::mediumUpdate(Snake* cpu, const QVector<QVector<int>>& grid, const QPoint& goal, int cols, int rows)
 {
     QPoint head = cpu->head();
-
-    int bestDir  = -1;
-    int bestDist = std::numeric_limits<int>::max();
-
-    for (int d = 0; d < 4; ++d) {
-        QPoint next(head.x() + DX[d], head.y() + DY[d]);
-        if (!isPassable(grid, next, cols, rows)) continue;
-        int dist = std::abs(next.x()-goal.x()) + std::abs(next.y()-goal.y());
-        if (dist < bestDist) { bestDist = dist; bestDir = d; }
+    const QVector<QPoint>& body = cpu->body();
+ 
+    // Dijkstra: body-aware, weighted by wall proximity, no heuristic
+    QPoint nextCell = DijkstraPathfinder::nextStep(head, goal, grid, cols, rows, body);
+ 
+    if (nextCell.x() >= 0) {
+        int dir = toDirection(head, nextCell);
+        if (dir >= 0) {
+            cpu->setDesiredDirection(static_cast<Snake::Direction>(dir));
+            return;
+        }
     }
-
-    if (bestDir >= 0)
-        cpu->setDesiredDirection(static_cast<Snake::Direction>(bestDir));
+ 
+    // Fallback: any passable open neighbour (should rarely trigger)
+    for (int d = 0; d < 4; ++d) {
+        QPoint nb(head.x() + DX[d], head.y() + DY[d]);
+        if (isPassable(grid, nb, cols, rows)) {
+            cpu->setDesiredDirection(static_cast<Snake::Direction>(d));
+            return;
+        }
+    }
 }
+
 
 void AIController::hardUpdate(Snake* cpu, const QVector<QVector<int>>& grid, const QPoint& goal, const QVector<PowerUp>& powerUps, int cols, int rows)
 {

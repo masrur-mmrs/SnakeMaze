@@ -32,6 +32,7 @@ set(SOURCES
     src/core/GameState.cpp
     src/ai/AIController.cpp
     src/ai/AStarPathfinder.cpp
+    src/ai/DijkstraPathfinder.cpp
 )
 
 set(HEADERS
@@ -42,6 +43,7 @@ set(HEADERS
     src/core/GameState.h
     src/ai/AIController.h
     src/ai/AStarPathfinder.h
+    src/ai/DijkstraPathfinder.h
 )
 
 # 3. Create Executable

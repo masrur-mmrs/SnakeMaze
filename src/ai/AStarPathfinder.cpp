@@ -1,5 +1,4 @@
 #include "AStarPathfinder.h"
-
 #include <QMap>
 #include <algorithm>
 #include <cmath>

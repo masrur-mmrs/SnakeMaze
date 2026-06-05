@@ -1,5 +1,4 @@
 #include "MazeGenerator.h"
-
 #include <QRandomGenerator>
 #include <algorithm>
 #include <array>
