@@ -19,6 +19,9 @@ GameEngine::~GameEngine() = default;
 
 void GameEngine::startGame(int difficulty)
 {
+    m_paused = false;
+    emit pauseChanged();
+    
     m_difficulty = difficulty;
 
     switch (difficulty) {
